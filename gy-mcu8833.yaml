@@ -1,0 +1,82 @@
+esphome:
+  name: mcu8833
+  platform: ESP8266
+  board: d1_mini
+  includes:
+    - mcu8833.h
+
+wifi:
+  ssid: !secret ssid
+  password: !secret password
+  domain: !secret domain
+  
+  manual_ip:
+    # Set this to the IP of the ESP
+    static_ip: 192.168.0.84
+    # Set this to the IP address of the router. Often ends with .1
+    gateway: 192.168.0.1
+    # The subnet of the network. 255.255.255.0 works for most home networks.
+    subnet: 255.255.255.0
+
+logger:
+
+# Enable Home Assistant API
+api:
+  password: ""
+
+ota:
+  password: ""
+  
+captive_portal:
+
+uart:
+  id: uart_bus
+  tx_pin: 4
+  rx_pin: 5
+  baud_rate: 9600
+
+sensor:
+  - platform: custom
+    lambda: |-
+      auto mcu8833 = new MCU8833Component(id(uart_bus));
+      App.register_component(mcu8833);
+      return {mcu8833->max_temperature, mcu8833->min_temperature, mcu8833->avg_temperature, mcu8833->min_index, mcu8833->max_index};
+
+    sensors:
+      - name: "Thermal Sensor Max"
+        unit_of_measurement: °C
+        device_class: temperature
+        accuracy_decimals: 2
+
+      - name: "Thermal Sensor Min"
+        unit_of_measurement: °C
+        device_class: temperature
+        accuracy_decimals: 2
+
+      - name: "Thermal Sensor Avg"
+        unit_of_measurement: °C
+        device_class: temperature
+        accuracy_decimals: 2
+
+      - name: "Thermal Sensor Min Index"
+        accuracy_decimals: 0
+
+      - name: "Thermal Sensor Max Index"
+        accuracy_decimals: 0
+
+  - platform: homeassistant 
+    entity_id: sensor.thermal_sensor_max
+    id: thermal_max_temp
+    internal: true 
+
+# Example configuration entry
+display:
+    platform: tm1637
+    id: tm1637_display
+    clk_pin: D5 #GPIO14
+    dio_pin: D6 #GPIO12
+    inverted: false
+    intensity: 2
+    length: 4
+    lambda: |-
+      it.printf(0,"%4.0f", id(thermal_max_temp).state);
