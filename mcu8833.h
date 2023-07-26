@@ -11,10 +11,10 @@ class MCU8833Component : public PollingComponent, public UARTDevice {
   Sensor *max_index = new Sensor();
 
   // GY-MCU8833 serial protocol unknown 
-  // HEADER = 5bytes, BODY = 64bytes, TAIL = 2bytes 
+  // HEADER = 6 bytes, BODY = 64 bytes, TAIL = 1 byte(checksum of 0 ~ 69th bytes)  
   const byte PACKET_LENGTH = 71;  
   const byte NUM_CELL = 64; 
-  const byte START_BYTES[2] = {0x03, 0x09};
+  const byte START_BYTES[2] = {0xA4, 0x03};
   const int MAX_BUFFER = 512; 
 
   void setup() override 
@@ -67,59 +67,73 @@ class MCU8833Component : public PollingComponent, public UARTDevice {
       int keyword = 0;
       byte data_start = 0; 
       byte data_index = 0; 
+      byte checksum = 0; 
 
       for (byte i = 0; i < read_index; i++)
       {
         if (keyword == 0 && packet[i] == START_BYTES[0])
         {
           keyword = 1; 
+          packet_selected[data_index++] = START_BYTES[0]; 
         }
         else if(keyword == 1 && packet[i] == START_BYTES[1]) 
         {
           keyword = 2; 
-          data_start = i + 3; 
+          packet_selected[data_index++] = START_BYTES[1]; 
         }
         else if(keyword == 2) 
         {
-          if (i > data_start)
-          {   
-            packet_selected[data_index++] = packet[i]; 
-            if (data_index == NUM_CELL)
+            if (data_index == (PACKET_LENGTH - 1))
             {
+              checksum = packet[i];
               break; 
             }
-          }
+            else
+            {
+              packet_selected[data_index++] = packet[i]; 
+            }
         }
       }
 
-      if (data_index == NUM_CELL)
+      // ignore incomplete packet 
+      if (data_index != (PACKET_LENGTH - 1)) return; 
+
+      // verify packet : Checksum 8bits modulo 256 
+      int checksum_calc = 0; 
+      for (byte i = 0; i < PACKET_LENGTH - 1; i++)
       {
-        // Find maximum, minimum, and sum of temperatures
-        for (byte i = 0; i < NUM_CELL; i++) 
-        {
-          int temperature = packet_selected[i];
-          if (temperature > maxTemp) {
-            maxTemp = temperature;
-            maxIndex = i; 
-          }
-          if (temperature < minTemp) {
-            minTemp = temperature;
-            minIndex = i; 
-          }
-          sumTemp += temperature;
-        }
-
-        // Calculate average temperature
-        float avgTemp = static_cast<float>(sumTemp) / NUM_CELL;
-
-        {
-          max_temperature->publish_state(maxTemp);
-          min_temperature->publish_state(minTemp);
-          min_index->publish_state(minIndex);
-          max_index->publish_state(maxIndex);
-          avg_temperature->publish_state(avgTemp);
-        }
+        checksum_calc += (int)packet_selected[i];
       }
+
+      byte checksum_result = (byte)(checksum_calc % 256); 
+      if (checksum_result != checksum)
+      {
+          return; 
+      }
+
+      // Find maximum, minimum, and sum of temperatures
+      for (byte i = 6; i < PACKET_LENGTH - 1; i++) 
+      {
+        int temperature = packet_selected[i];
+        if (temperature > maxTemp) {
+          maxTemp = temperature;
+          maxIndex = i + 1; 
+        }
+        if (temperature < minTemp) {
+          minTemp = temperature;
+          minIndex = i + 1; 
+        }
+        sumTemp += temperature;
+      }
+
+      // Calculate average temperature
+      float avgTemp = static_cast<float>(sumTemp) / NUM_CELL;
+
+      max_temperature->publish_state(maxTemp);
+      min_temperature->publish_state(minTemp);
+      min_index->publish_state(minIndex);
+      max_index->publish_state(maxIndex);
+      avg_temperature->publish_state(avgTemp);
     }
   }
 };
