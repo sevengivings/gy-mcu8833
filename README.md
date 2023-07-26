@@ -4,19 +4,11 @@ ESPHome test code for GY-MCU8833 8x8 array infrared thermometer.
 
 Unlike AMG8833 has I2C port, MCU8833 uses serial communication. I couldn't find ESPHome code(.YML) for MCU8833, so I implemented a simple custom sensor. Currently, only maximum and minimum temperature among 64 pixels are available to Home Assistant.   
 
-Sample dump in hex using Realterm for Windows, 03 09 42 0C and A4 might not be changed. For example 0x20 means 32℃. Header 5 bytes, Body 64 bytes and Tail 2 bytes. If I get the description of detailed protocol, I'll implement it. 
+Sample dump in hex using Realterm for Windows, I assumed that A4 03 is keyword and I don't have any information about 09 42 0C B8(changed every time). 
 
-```
-03 09 42 0C 86 
-1F 1F 20 20 1F 20 20 20 20 20 20 20 20 20 20 20 
-1F 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 
-20 20 20 20 20 20 20 20 20 21 20 20 20 21 21 20 
-20 21 21 21 21 21 20 1F 20 20 20 20 1F 20 20 1E 
-84 A4
-```
+About Body, 0x20 means 32℃. 
 
-If 0xA4 is not changed, it struck to me that A4 is the first keyword byte?
-
+Header 6 bytes, Body 64 bytes and Tail 1 bytes(checksum 8bit modulo 256). 
 ```
 A4 03 09 42 0C B8 
 1A 1B 1A 1A 1A 1A 1A 1B 1A 1A 1A 1A 1A 1A 1A 1A 
@@ -26,7 +18,7 @@ A4 03 09 42 0C B8
 83
 ```
 
-From https://www.scadacore.com/tools/programming-calculators/online-checksum-calculator/ I found that 0x83 is the result of CheckSum8 Modulo 256 of 0xA4 ~ 0x1D(70 bytes). I'll add function to calculate checksum.  
+From https://www.scadacore.com/tools/programming-calculators/online-checksum-calculator/ I found that 0x83 is the result of CheckSum8 Modulo 256 of 0xA4 ~ 0x1D(70 bytes). So, added checksum verification.
 
 I'm using this sensor to determine whether or not to activate the range hood.
 
