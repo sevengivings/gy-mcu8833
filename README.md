@@ -4,7 +4,7 @@ ESPHome test code for GY-MCU8833 8x8 array infrared thermometer.
 
 Unlike AMG8833 has I2C port, MCU8833 uses serial communication. I couldn't find ESPHome code(.YML) for MCU8833, so I implemented a simple custom sensor. Currently, only maximum and minimum temperature among 64 pixels are available to Home Assistant.   
 
-Sample dump in hex using Realterm for Windows, I assumed that A4 03 is keyword and I don't have any information about 09 42 0C B8(changed every time). 
+Sample dump in hex using Realterm for Windows, I assumed that 0xA4 and 0x03 are keyword and I don't have any information about 09 42 0C B8(changed every time). 
 
 About temperature value of Body, 0x20 means 32℃. 
 
