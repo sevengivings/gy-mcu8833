@@ -7,11 +7,17 @@ Unlike AMG8833 has I2C port, MCU8833 uses serial communication. I couldn't find 
 * Sample dump in hex, 03 09 42 0C and A4 may be unchanged. For example 0x20 means 32℃. Header 5 bytes, Body 64 bytes and Tail 2 bytes. If I get the description of detailed protocol, I'll implement it. 
   
 03 09 42 0C 86 
+
 1F 1F 20 20 1F 20 20 20 20 20 20 20 20 20 20 20 
+
 1F 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 
+
 20 20 20 20 20 20 20 20 20 21 20 20 20 21 21 20 
+
 20 21 21 21 21 21 20 1F 20 20 20 20 1F 20 20 1E 
+
 84 A4
+
 
 I'm using this sensor to determine whether or not to activate the range hood.
 
