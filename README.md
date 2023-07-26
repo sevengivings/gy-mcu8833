@@ -6,9 +6,9 @@ Unlike AMG8833 has I2C port, MCU8833 uses serial communication. I couldn't find 
 
 Sample dump in hex using Realterm for Windows, I assumed that A4 03 is keyword and I don't have any information about 09 42 0C B8(changed every time). 
 
-About Body, 0x20 means 32℃. 
+About temperature value of Body, 0x20 means 32℃. 
 
-Header 6 bytes, Body 64 bytes and Tail 1 bytes(checksum 8bit modulo 256). 
+Header 6 bytes, Body 64 bytes and Tail 1 byte(checksum 8bits modulo 256). 
 ```
 A4 03 09 42 0C B8 
 1A 1B 1A 1A 1A 1A 1A 1B 1A 1A 1A 1A 1A 1A 1A 1A 
