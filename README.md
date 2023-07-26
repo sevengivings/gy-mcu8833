@@ -15,6 +15,19 @@ Sample dump in hex using Realterm for Windows, 03 09 42 0C and A4 might not be c
 84 A4
 ```
 
+If 0xA4 is not changed, it struck to me that A4 is the first keyword byte?
+
+```
+A4 03 09 42 0C B8 
+1A 1B 1A 1A 1A 1A 1A 1B 1A 1A 1A 1A 1A 1A 1A 1A 
+1A 1A 1A 1A 1B 1A 1A 1A 1B 1A 1B 1B 1D 1E 1B 1B 
+1B 1B 1B 1B 1C 1D 1E 1D 1B 1A 1B 1B 1B 1D 1E 1D 
+1B 1B 1B 1B 1C 1E 1E 1D 1A 1B 1B 1B 1B 1E 1E 1D 
+83
+```
+
+From https://www.scadacore.com/tools/programming-calculators/online-checksum-calculator/ I found that 0x83 is the result of CheckSum8 Modulo 256 of 0xA4 ~ 0x1D(70 bytes). I'll add function to calculate checksum.  
+
 I'm using this sensor to determine whether or not to activate the range hood.
 
 ![090609](https://github.com/sevengivings/gy-mcu8833/assets/2328500/ddd8145e-e9c4-475b-96eb-28d8879a7878)
