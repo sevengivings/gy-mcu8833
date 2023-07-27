@@ -26,6 +26,8 @@ I'm using this sensor to determine whether or not to activate the range hood.
 
 The power of range hood is controlled by Home Assistant via IoT power plug. 
 
+![iotplug](https://github.com/sevengivings/gy-mcu8833/assets/2328500/23b176ad-b6bd-4232-8fca-9d2a5e104d5b)
+
 Generally it cannot be used as cooking thermometer because of inaccuracy and measuring limit. But, it can detect overheating of an empty skillet(ex. over 200℃).
 
 For more information, refer to https://imky.tistory.com/72 and https://imky.tistory.com/60 (in Korean)
