@@ -26,6 +26,6 @@ I'm using this sensor to determine whether or not to activate the range hood.
 
 Generally it cannot be used as cooking thermometer because of inaccuracy and measuring limit. But, it can detect overheating of an empty skillet(ex. over 200℃).
 
-For more information, refer to https://imky.tistory.com/72 (in Korean)
+For more information, refer to https://imky.tistory.com/72 and https://imky.tistory.com/60 (in Korean)
 
 Excellent AMG8833 ESPHome implementation can be found in https://github.com/TheRealWaldo/AMG8833-ESPHOME 
