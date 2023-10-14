@@ -29,7 +29,7 @@ class MCU8833Component : public PollingComponent, public UARTDevice {
   }
 
   // for PollingComponent 
-  void update() override
+void update() override
   {
     bool read_success = false; 
     byte packet[MAX_BUFFER];   
@@ -56,7 +56,7 @@ class MCU8833Component : public PollingComponent, public UARTDevice {
     if(read_index >= PACKET_LENGTH)
     {
       // Variables to store calculations
-      int sumTemp = 0;
+      float sumTemp = 0;
       float maxTemp = -127; // Minimum possible 8-bit integer value
       float minTemp = 127;  // Maximum possible 8-bit integer value
       int maxIndex = -1; 
@@ -114,7 +114,8 @@ class MCU8833Component : public PollingComponent, public UARTDevice {
       // Find maximum, minimum, and sum of temperatures
       for (byte i = 6; i < PACKET_LENGTH - 1; i++) 
       {
-        int temperature = packet_selected[i];
+        signed char temp = static_cast<signed char>(packet_selected[i]);
+        float temperature = static_cast<float>(temp); 
         if (temperature > maxTemp) {
           maxTemp = temperature;
           maxIndex = i + 1; 
@@ -127,7 +128,7 @@ class MCU8833Component : public PollingComponent, public UARTDevice {
       }
 
       // Calculate average temperature
-      float avgTemp = static_cast<float>(sumTemp) / NUM_CELL;
+      float avgTemp = sumTemp / NUM_CELL;
 
       max_temperature->publish_state(maxTemp);
       min_temperature->publish_state(minTemp);
@@ -137,3 +138,4 @@ class MCU8833Component : public PollingComponent, public UARTDevice {
     }
   }
 };
+
