@@ -112,17 +112,17 @@ void update() override
       }
 
       // Find maximum, minimum, and sum of temperatures
-      for (byte i = 6; i < PACKET_LENGTH - 1; i++) 
+      for (byte i = 6, j = 0; i < PACKET_LENGTH - 1; i++, j++) 
       {
         signed char temp = static_cast<signed char>(packet_selected[i]);
         float temperature = static_cast<float>(temp); 
         if (temperature > maxTemp) {
           maxTemp = temperature;
-          maxIndex = i + 1; 
+          maxIndex = j; 
         }
         if (temperature < minTemp) {
           minTemp = temperature;
-          minIndex = i + 1; 
+          minIndex = j; 
         }
         sumTemp += temperature;
       }
